@@ -170,12 +170,14 @@ def nmap_scan_detailed(ip):
             
             # OS detection results
             os_info = ""
+            os_accuracy = 0
             if 'osmatch' in host_info and host_info['osmatch']:
                 os_matches = host_info['osmatch']
                 debug_print(f"[DEBUG] OS matches found: {len(os_matches)}")
                 for i, match in enumerate(os_matches[:3]):  # Show top 3
                     debug_print(f"[DEBUG] OS match {i+1}: {match['name']} (accuracy: {match.get('accuracy', 'unknown')}%)")
                 os_info = os_matches[0]['name']
+                os_accuracy = int(os_matches[0].get('accuracy', 0))
             else:
                 debug_print(f"[DEBUG] No OS matches found for {ip}")
             
@@ -183,6 +185,7 @@ def nmap_scan_detailed(ip):
                 'ports': ports,
                 'services': services,
                 'os': os_info,
+                'os_accuracy': os_accuracy,
                 'hostname': host_info.hostname()
             }
             
@@ -578,6 +581,167 @@ def main():
                 print(f"        Model: {upnp.get('model_number')}")
         
         print("-" * 80)
+    
+    # CVE Vulnerability Scanning Phase
+    high_confidence_iot = [
+        device for device in devices 
+        if device['is_iot'] and device.get('os_accuracy', 0) >= 95 and device.get('ports')
+    ]
+    
+    if high_confidence_iot:
+        print(f"\n{'='*60}")
+        print("CVE VULNERABILITY SCANNING")
+        print(f"{'='*60}")
+        print(f"Found {len(high_confidence_iot)} high-confidence IoT devices (≥95% OS accuracy) suitable for CVE scanning:")
+        print()
+        
+        for i, device in enumerate(high_confidence_iot, 1):
+            vendor = device['vendor'][:25] if len(device['vendor']) > 25 else device['vendor']
+            os_info = device['os'][:40] if len(device['os']) > 40 else device['os']
+            ports_count = len(device['ports'])
+            print(f"{i:2d}. {device['ip']:<15} | {vendor:<25} | {os_info:<40} | {device['os_accuracy']}% | {ports_count} ports")
+        
+        print(f"\n{len(high_confidence_iot)+1:2d}. Scan ALL devices above")
+        print(f"{len(high_confidence_iot)+2:2d}. Skip CVE scanning")
+        
+        try:
+            choice = input("\nSelect devices for CVE vulnerability scanning (comma-separated numbers): ").strip()
+            
+            if choice:
+                selected_devices = []
+                
+                if choice == str(len(high_confidence_iot)+1):  # Scan all
+                    selected_devices = high_confidence_iot
+                elif choice == str(len(high_confidence_iot)+2):  # Skip
+                    print("CVE scanning skipped.")
+                    return
+                else:
+                    # Parse comma-separated choices
+                    try:
+                        choices = [int(x.strip()) for x in choice.split(',')]
+                        selected_devices = [high_confidence_iot[i-1] for i in choices if 1 <= i <= len(high_confidence_iot)]
+                    except (ValueError, IndexError):
+                        print("Invalid selection. CVE scanning skipped.")
+                        return
+                
+                if selected_devices:
+                    perform_cve_scanning(selected_devices)
+            else:
+                print("No selection made. CVE scanning skipped.")
+                
+        except KeyboardInterrupt:
+            print("\nCVE scanning cancelled.")
+    else:
+        print(f"\n{'='*60}")
+        print("CVE VULNERABILITY SCANNING")
+        print(f"{'='*60}")
+        print("No high-confidence IoT devices found for CVE scanning.")
+        print("(Requires: IoT device + ≥95% OS detection accuracy + open ports)")
+
+def perform_cve_scanning(selected_devices):
+    """Perform CVE vulnerability scanning on selected devices."""
+    print(f"\nStarting CVE vulnerability scanning on {len(selected_devices)} devices...")
+    print("This may take several minutes per device.\n")
+    
+    for i, device in enumerate(selected_devices, 1):
+        ip = device['ip']
+        print(f"[{i}/{len(selected_devices)}] CVE scanning {ip} ({device['vendor']})...")
+        
+        try:
+            cve_results = nmap_cve_scan(ip)
+            
+            if cve_results:
+                print(f"\n🚨 VULNERABILITIES FOUND for {ip}:")
+                print("-" * 60)
+                
+                for vuln in cve_results:
+                    print(f"• {vuln['title']}")
+                    if vuln.get('cve'):
+                        print(f"  CVE: {vuln['cve']}")
+                    if vuln.get('severity'):
+                        print(f"  Severity: {vuln['severity']}")
+                    if vuln.get('description'):
+                        print(f"  Description: {vuln['description'][:100]}...")
+                    print()
+            else:
+                print(f"✅ No known vulnerabilities found for {ip}")
+                
+        except Exception as e:
+            print(f"❌ CVE scan failed for {ip}: {e}")
+        
+        print("-" * 80)
+
+def nmap_cve_scan(ip):
+    """Perform nmap CVE vulnerability scan on a single device."""
+    if not NMAP_AVAILABLE:
+        return None
+    
+    try:
+        debug_print(f"[DEBUG] Starting CVE scan for {ip}...")
+        nm = nmap.PortScanner()
+        
+        # Use vulnerability detection scripts
+        vuln_args = '--script vuln -sV'
+        debug_print(f"[DEBUG] CVE scan command: nmap {vuln_args} {ip}")
+        
+        nm.scan(ip, arguments=vuln_args)
+        
+        if ip in nm.all_hosts():
+            host_info = nm[ip]
+            vulnerabilities = []
+            
+            # Parse script results for vulnerabilities
+            for proto in host_info.all_protocols():
+                for port in host_info[proto].keys():
+                    port_info = host_info[proto][port]
+                    
+                    if 'script' in port_info:
+                        for script_name, script_output in port_info['script'].items():
+                            if 'vuln' in script_name or 'cve' in script_name:
+                                vuln = parse_vulnerability_output(script_name, script_output, port)
+                                if vuln:
+                                    vulnerabilities.append(vuln)
+            
+            debug_print(f"[DEBUG] Found {len(vulnerabilities)} vulnerabilities for {ip}")
+            return vulnerabilities
+            
+    except Exception as e:
+        debug_print(f"[DEBUG] CVE scan failed for {ip}: {e}")
+    
+    return None
+
+def parse_vulnerability_output(script_name, output, port):
+    """Parse nmap vulnerability script output."""
+    try:
+        # Look for CVE patterns
+        cve_pattern = r'CVE-\d{4}-\d{4,}'
+        cves = re.findall(cve_pattern, output)
+        
+        # Determine severity from script name or output
+        severity = "Unknown"
+        if 'critical' in output.lower():
+            severity = "Critical"
+        elif 'high' in output.lower():
+            severity = "High"
+        elif 'medium' in output.lower():
+            severity = "Medium"
+        elif 'low' in output.lower():
+            severity = "Low"
+        
+        # Extract title from script name
+        title = script_name.replace('-', ' ').replace('_', ' ').title()
+        
+        return {
+            'title': title,
+            'port': port,
+            'cve': ', '.join(cves) if cves else None,
+            'severity': severity,
+            'description': output[:200].replace('\n', ' ').strip(),
+            'script': script_name
+        }
+        
+    except Exception:
+        return None
 
 if __name__ == "__main__":
     main()
