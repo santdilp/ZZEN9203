@@ -493,17 +493,59 @@ def main():
     """Main function with layered discovery approach."""
     global DEBUG
     
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Usage: python getdevice-week3.py <IP_RANGE> [--debug]")
+    if len(sys.argv) < 2 or len(sys.argv) > 4:
+        print("Usage: python getdevice-week3.py <IP_RANGE> [--debug] [--cve-only]")
         print("Example: python getdevice-week3.py 192.168.1.0/24")
         print("Example: python getdevice-week3.py 192.168.1.1-254 --debug")
+        print("Example: python getdevice-week3.py 192.168.1.100 --cve-only")
+        print("Example: python getdevice-week3.py 192.168.1.100 --debug --cve-only")
         sys.exit(1)
     
     ip_range = sys.argv[1]
+    cve_only = False
     
-    if len(sys.argv) == 3 and sys.argv[2] == '--debug':
-        DEBUG = True
-        print("Debug mode enabled")
+    # Parse flags
+    for arg in sys.argv[2:]:
+        if arg == '--debug':
+            DEBUG = True
+            print("Debug mode enabled")
+        elif arg == '--cve-only':
+            cve_only = True
+        else:
+            print(f"Unknown flag: {arg}")
+            sys.exit(1)
+    
+    # CVE-only mode: skip discovery, go straight to vulnerability scanning
+    if cve_only:
+        print("=== CVE-Only Mode: Direct Vulnerability Scanning ===")
+        
+        # Parse single IP or small range
+        ips = parse_ip_range(ip_range)
+        if not ips:
+            print(f"Invalid IP format: {ip_range}")
+            sys.exit(1)
+        
+        if len(ips) > 10:
+            print(f"CVE-only mode limited to 10 IPs max. Got {len(ips)} IPs.")
+            print("Use regular discovery mode for larger ranges.")
+            sys.exit(1)
+        
+        # Create minimal device info for CVE scanning
+        cve_devices = []
+        for ip in ips:
+            print(f"Preparing {ip} for CVE scanning...")
+            device = {
+                'ip': ip,
+                'vendor': 'Unknown',
+                'os': 'Unknown',
+                'os_accuracy': 100,  # Assume high confidence for direct scanning
+                'ports': [80, 443, 22],  # Will be detected during CVE scan
+                'is_iot': True  # Assume IoT for CVE scanning
+            }
+            cve_devices.append(device)
+        
+        perform_cve_scanning(cve_devices)
+        return
     
     print("=== IoT Device Discovery with Layered Approach ===")
     print(f"MAC Vendor Lookup: {'manuf library (offline)' if MANUF_AVAILABLE else 'API only (rate limited)'}")
@@ -642,6 +684,10 @@ def perform_cve_scanning(selected_devices):
     """Perform CVE vulnerability scanning on selected devices."""
     print(f"\nStarting CVE vulnerability scanning on {len(selected_devices)} devices...")
     print("This may take several minutes per device.\n")
+    
+    if not NMAP_AVAILABLE:
+        print("❌ Nmap not available. CVE scanning requires nmap.")
+        return
     
     for i, device in enumerate(selected_devices, 1):
         ip = device['ip']
