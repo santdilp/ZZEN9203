@@ -726,8 +726,8 @@ def nmap_cve_scan(ip):
         debug_print(f"[DEBUG] Starting CVE scan for {ip}...")
         nm = nmap.PortScanner()
         
-        # Use vulnerability detection scripts
-        vuln_args = '--script vuln -sV'
+        # Use more reliable vulnerability scripts with timeout
+        vuln_args = '--script "vuln and safe" -sV --script-timeout=30s'
         debug_print(f"[DEBUG] CVE scan command: nmap {vuln_args} {ip}")
         
         nm.scan(ip, arguments=vuln_args)
@@ -736,20 +736,39 @@ def nmap_cve_scan(ip):
             host_info = nm[ip]
             vulnerabilities = []
             
+            debug_print(f"[DEBUG] Host {ip} protocols: {host_info.all_protocols()}")
+            
             # Parse script results for vulnerabilities
             for proto in host_info.all_protocols():
                 for port in host_info[proto].keys():
                     port_info = host_info[proto][port]
                     
-                    if 'script' in port_info:
-                        for script_name, script_output in port_info['script'].items():
-                            if 'vuln' in script_name or 'cve' in script_name:
-                                vuln = parse_vulnerability_output(script_name, script_output, port)
-                                if vuln:
-                                    vulnerabilities.append(vuln)
+                    if port_info['state'] == 'open':
+                        debug_print(f"[DEBUG] Checking scripts for port {port}")
+                        
+                        if 'script' in port_info:
+                            debug_print(f"[DEBUG] Scripts found for port {port}: {list(port_info['script'].keys())}")
+                            
+                            for script_name, script_output in port_info['script'].items():
+                                debug_print(f"[DEBUG] Processing script {script_name}")
+                                
+                                # Skip failed scripts
+                                if 'ERROR:' in script_output or 'Script execution failed' in script_output:
+                                    debug_print(f"[DEBUG] Skipping failed script {script_name}")
+                                    continue
+                                
+                                if ('vuln' in script_name or 'cve' in script_name or 
+                                    'ssl' in script_name or 'http' in script_name):
+                                    vuln = parse_vulnerability_output(script_name, script_output, port)
+                                    if vuln:
+                                        vulnerabilities.append(vuln)
+                        else:
+                            debug_print(f"[DEBUG] No scripts found for port {port}")
             
             debug_print(f"[DEBUG] Found {len(vulnerabilities)} vulnerabilities for {ip}")
             return vulnerabilities
+        else:
+            debug_print(f"[DEBUG] Host {ip} not found in scan results")
             
     except Exception as e:
         debug_print(f"[DEBUG] CVE scan failed for {ip}: {e}")
@@ -759,34 +778,57 @@ def nmap_cve_scan(ip):
 def parse_vulnerability_output(script_name, output, port):
     """Parse nmap vulnerability script output."""
     try:
+        # Skip empty or error outputs
+        if not output or len(output.strip()) < 10:
+            return None
+        
         # Look for CVE patterns
         cve_pattern = r'CVE-\d{4}-\d{4,}'
         cves = re.findall(cve_pattern, output)
         
+        # Look for vulnerability indicators
+        vuln_indicators = [
+            'vulnerable', 'exploit', 'weakness', 'insecure', 'default',
+            'anonymous', 'unauthenticated', 'disclosure', 'bypass'
+        ]
+        
+        has_vulnerability = any(indicator in output.lower() for indicator in vuln_indicators)
+        
+        # Only return if we found CVEs or vulnerability indicators
+        if not cves and not has_vulnerability:
+            return None
+        
         # Determine severity from script name or output
         severity = "Unknown"
-        if 'critical' in output.lower():
+        if any(word in output.lower() for word in ['critical', 'severe']):
             severity = "Critical"
-        elif 'high' in output.lower():
+        elif any(word in output.lower() for word in ['high', 'dangerous']):
             severity = "High"
-        elif 'medium' in output.lower():
+        elif any(word in output.lower() for word in ['medium', 'moderate']):
             severity = "Medium"
-        elif 'low' in output.lower():
+        elif any(word in output.lower() for word in ['low', 'minor', 'info']):
             severity = "Low"
+        elif cves:
+            severity = "Medium"  # Default for CVEs
         
         # Extract title from script name
         title = script_name.replace('-', ' ').replace('_', ' ').title()
+        
+        # Clean up description
+        description = output.replace('\n', ' ').replace('\t', ' ')
+        description = ' '.join(description.split())  # Remove extra whitespace
         
         return {
             'title': title,
             'port': port,
             'cve': ', '.join(cves) if cves else None,
             'severity': severity,
-            'description': output[:200].replace('\n', ' ').strip(),
+            'description': description[:300],
             'script': script_name
         }
         
-    except Exception:
+    except Exception as e:
+        debug_print(f"[DEBUG] Error parsing vulnerability output: {e}")
         return None
 
 if __name__ == "__main__":
