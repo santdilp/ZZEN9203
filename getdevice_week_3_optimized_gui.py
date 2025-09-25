@@ -21,10 +21,12 @@ class ScannerGUI:
         self.debug_var = tk.BooleanVar()
         self.cve_var = tk.BooleanVar()
         self.nointeractive_var = tk.BooleanVar()
+        self.webbruteforce_var = tk.BooleanVar()
 
         tk.Checkbutton(root, text="Debug logging", variable=self.debug_var).grid(row=1, column=0, sticky="w")
         tk.Checkbutton(root, text="CVE-only mode", variable=self.cve_var).grid(row=1, column=1, sticky="w")
         tk.Checkbutton(root, text="Non-interactive CVE scan", variable=self.nointeractive_var).grid(row=2, column=0, sticky="w")
+        tk.Checkbutton(root, text="Web brute force", variable=self.webbruteforce_var).grid(row=2, column=1, sticky="w")
 
         # Output file selectors
         tk.Label(root, text="JSON Output:").grid(row=3, column=0, sticky="w")
@@ -73,6 +75,8 @@ class ScannerGUI:
             args.append("--cve-only")
         if self.nointeractive_var.get():
             args.append("--no-interactive")
+        if self.webbruteforce_var.get():
+            args.append("--web-bruteforce")
         if self.json_path.get():
             args.extend(["--output-json", self.json_path.get()])
         if self.csv_path.get():

@@ -45,11 +45,16 @@ except Exception:
     MANUF_AVAILABLE = False
 
 try:
-    import nvdlib
-    NVDLIB_AVAILABLE = True
+    import requests
+    REQUESTS_AVAILABLE = True
 except Exception:
-    nvdlib = None
-    NVDLIB_AVAILABLE = False
+    REQUESTS_AVAILABLE = False
+
+try:
+    from web_bruteforce import scan_web_ports
+    WEB_BRUTEFORCE_AVAILABLE = True
+except Exception:
+    WEB_BRUTEFORCE_AVAILABLE = False
 
 # Simple in-memory cache for MAC vendor lookups
 MAC_VENDOR_CACHE: Dict[str, str] = {}
@@ -71,6 +76,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--no-interactive", action="store_true", help="Non-interactive (auto select all detected devices for CVE scan)")
     parser.add_argument("--output-json", help="Write full results to JSON file")
     parser.add_argument("--output-csv", help="Write summary to CSV file")
+    parser.add_argument("--web-bruteforce", action="store_true", help="Enable web login brute force on detected web ports")
     return parser.parse_args()
 
 
@@ -210,6 +216,7 @@ def nmap_scan_detailed(ip: str) -> Optional[Dict[str, Any]]:
             except Exception:
                 os_accuracy = 0
         hostname = host.hostname() if hasattr(host, 'hostname') else ''
+        logger.debug("nmap_scan_detailed for %s: ports=%s, os='%s' (%d%%), hostname='%s'", ip, ports, os_info, os_accuracy, hostname)
         return {'ports': ports, 'services': services, 'os': os_info, 'os_accuracy': os_accuracy, 'hostname': hostname}
     except Exception as e:
         logger.debug("nmap_scan_detailed exception for %s: %s", ip, e)
@@ -237,9 +244,12 @@ def nmap_cve_scan(ip: str) -> Optional[List[Dict[str, Any]]]:
                 for script_name, output in scripts.items():
                     parsed = parse_vulnerability_output(script_name, output, port)
                     if parsed:
-                        # Try to enrich with NVD if available
-                        if NVDLIB_AVAILABLE and parsed.get('cve'):
-                            parsed = enrich_with_nvd(parsed)
+                        # Try to enrich with MITRE CVE details
+                        if REQUESTS_AVAILABLE and parsed.get('cve'):
+                            try:
+                                parsed = enrich_with_cve_details(parsed)
+                            except Exception as e:
+                                logger.debug("CVE enrichment failed: %s", e)
                         vulns.append(parsed)
         return vulns
     except Exception as e:
@@ -250,12 +260,47 @@ def nmap_cve_scan(ip: str) -> Optional[List[Dict[str, Any]]]:
 def parse_vulnerability_output(script_name: str, output: str, port: int) -> Optional[Dict[str, Any]]:
     if not output or len(output.strip()) < 10:
         return None
+    
+    # Debug: log the actual output to understand its structure
+    logger.debug("Script %s output: %s", script_name, output[:200])
+    
     # Deduplicate CVEs by converting to set then back to sorted list
     cves = sorted(list(set(re.findall(r"CVE-\d{4}-\d{4,}", output))))
     indicators = ['vulnerable', 'exploit', 'weakness', 'insecure', 'default', 'unauthenticated', 'disclosure', 'bypass']
     has_vuln = any(x in output.lower() for x in indicators) or bool(cves)
     if not has_vuln:
         return None
+    
+    # For Vulners script, use the raw output as description since it contains CVE details
+    if script_name == 'vulners':
+        # Clean up the vulners output to extract meaningful descriptions
+        clean_desc = re.sub(r'cpe:/[^\s]+', '', output)  # Remove CPE strings
+        clean_desc = re.sub(r'https?://\S+', '', clean_desc)  # Remove URLs
+        clean_desc = re.sub(r'CVE-\d{4}-\d{4,}\s*[\d\.]*\s*', '', clean_desc)  # Remove CVE IDs and scores
+        clean_desc = re.sub(r'\s+', ' ', clean_desc).strip()  # Normalize whitespace
+        if len(clean_desc) > 20:
+            # Use the cleaned description for all CVEs from this script
+            cve_descriptions = {cve: clean_desc for cve in cves}
+        else:
+            cve_descriptions = {}
+    else:
+        # For other scripts, try to extract individual CVE descriptions
+        cve_descriptions = {}
+        lines = output.split('\n')
+        for line in lines:
+            if 'CVE-' in line:
+                cve_match = re.search(r'(CVE-\d{4}-\d{4,})', line)
+                if cve_match:
+                    cve_id = cve_match.group(1)
+                    desc_part = line.split(cve_id, 1)
+                    if len(desc_part) > 1:
+                        desc = desc_part[1].strip()
+                        desc = re.sub(r'^[\s\d\.\-:]+', '', desc)
+                        desc = re.sub(r'https?://\S+', '', desc)
+                        desc = re.sub(r'\s+', ' ', desc).strip()
+                        if len(desc) > 20:
+                            cve_descriptions[cve_id] = desc
+    
     # Severity heuristics
     severity = 'Unknown'
     low = ['low', 'minor', 'info']
@@ -275,32 +320,46 @@ def parse_vulnerability_output(script_name: str, output: str, port: int) -> Opti
         severity = 'Medium'
     title = script_name.replace('_', ' ').replace('-', ' ').title()
     desc = ' '.join(output.split())
-    return {'title': title, 'port': port, 'cve': cves, 'severity': severity, 'description': desc[:800], 'script': script_name}
+    return {'title': title, 'port': port, 'cve': cves, 'severity': severity, 'description': desc[:800], 'cve_descriptions': cve_descriptions, 'script': script_name}
 
 
-def enrich_with_nvd(vuln: Dict[str, Any]) -> Dict[str, Any]:
-    """If nvdlib available, fetch CVE details and attach CVSS scores/summary."""
-    if not NVDLIB_AVAILABLE:
+def enrich_with_cve_details(vuln: Dict[str, Any]) -> Dict[str, Any]:
+    """Fetch CVE details from MITRE API."""
+    if not REQUESTS_AVAILABLE:
         return vuln
     cve_list = vuln.get('cve', [])
     if not cve_list:
         return vuln
     details = []
-    for cve in cve_list:
+    # Limit to first 3 CVEs
+    for cve in cve_list[:3]:
         if not cve:
             continue
         try:
-            res = nvdlib.searchCVE(cveId=cve)
-            if res and isinstance(res, list):
-                # nvdlib returns list; take first
-                entry = res[0]
-                score_v3 = entry.get('impact', {}).get('baseMetricV3', {}).get('cvssV3', {}).get('baseScore') if entry.get('impact') else None
-                score_v2 = entry.get('impact', {}).get('baseMetricV2', {}).get('cvssV2', {}).get('baseScore') if entry.get('impact') else None
-                details.append({'cve': cve, 'summary': entry.get('summary'), 'cvss_v3': score_v3, 'cvss_v2': score_v2})
+            # Use MITRE CVE API (no auth required)
+            url = f"https://cveawg.mitre.org/api/cve/{cve}"
+            response = requests.get(url, timeout=5)
+            logger.debug("MITRE API response for %s: %d", cve, response.status_code)
+            if response.status_code == 200:
+                data = response.json()
+                # Extract description from MITRE format
+                desc = "CVE details not available from MITRE"
+                containers = data.get('containers', {})
+                cna = containers.get('cna', {})
+                descriptions = cna.get('descriptions', [])
+                if descriptions and len(descriptions) > 0:
+                    desc = descriptions[0].get('value', desc)
+                details.append({'cve': cve, 'summary': desc})
+            elif response.status_code == 404:
+                logger.debug("CVE %s not found in MITRE database", cve)
+                details.append({'cve': cve, 'summary': f"CVE {cve} not found in MITRE database"})
+            time.sleep(0.2)  # Increase delay to avoid rate limiting
         except Exception as e:
-            logger.debug("nvdlib lookup failed for %s: %s", cve, e)
+            logger.debug("MITRE CVE lookup failed for %s: %s", cve, e)
+            details.append({'cve': cve, 'summary': f"CVE lookup failed: {str(e)[:50]}"})
+            continue
     if details:
-        vuln['nvd'] = details
+        vuln['cve_details'] = details
     return vuln
 
 
@@ -339,12 +398,15 @@ def try_direct_upnp(ip: str) -> Optional[Dict[str, str]]:
 
 
 def is_likely_iot(vendor: str, ports: List[int], services: Dict[int, str], os_info: str) -> bool:
-    iot_keywords = ['camera', 'iot', 'embedded', 'busybox', 'rtsp', 'mqtt', 'upnp']
-    if vendor and any(k.lower() in vendor.lower() for k in ['ring', 'wyze', 'hikvision', 'arlo', 'tp-link', 'sonos', 'xiaomi', 'google', 'amazon']):
+    iot_keywords = ['camera', 'iot', 'embedded', 'busybox', 'rtsp', 'mqtt', 'upnp', 'gateway', 'zigbee', 'zwave', 'smart', 'lightify', 'philips hue', 'nest', 'thermostat', 'sensor']
+    iot_vendors = ['ring', 'wyze', 'hikvision', 'arlo', 'tp-link', 'sonos', 'xiaomi', 'google', 'amazon', 'osram', 'philips', 'nest', 'ecobee', 'honeywell', 'azurewave']
+    
+    if vendor and any(k.lower() in vendor.lower() for k in iot_vendors):
         return True
     if os_info and any(k in os_info.lower() for k in iot_keywords):
         return True
-    if any(p in ports for p in [554, 1883, 8080, 5000, 8554]):
+    if any(p in ports for p in [554, 1883, 8080, 5000, 8554, 80, 443]):
+        # Web interface on non-standard devices often indicates IoT
         return True
     for s in services.values():
         if any(k in s.lower() for k in iot_keywords):
@@ -394,12 +456,69 @@ def write_csv(path: str, devices: List[Dict[str, Any]]) -> None:
         import csv
         with open(path, 'w', newline='', encoding='utf-8') as f:
             w = csv.writer(f)
-            w.writerow(['ip', 'vendor', 'is_iot', 'ports_count', 'os'])
+            w.writerow(['ip', 'mac', 'vendor', 'is_iot', 'os', 'cve_count', 'weak_credentials', 'description'])
             for d in devices:
-                w.writerow([d['ip'], d.get('vendor',''), d.get('is_iot', False), len(d.get('ports', [])), d.get('os','')])
+                # Count CVEs
+                cve_count = 0
+                if d.get('vulnerabilities'):
+                    for vuln in d['vulnerabilities']:
+                        cve_count += len(vuln.get('cve', []))
+                
+                # Check weak credentials
+                weak_creds = "No"
+                cred_details = ""
+                if d.get('weak_credentials'):
+                    weak_creds = "Yes"
+                    cred_list = []
+                    for port, creds in d['weak_credentials'].items():
+                        if creds:
+                            cred_list.append(f"Port {port}: {creds[0]}:{creds[1]}")
+                    cred_details = "; ".join(cred_list)
+                
+                w.writerow([
+                    d['ip'], 
+                    d.get('mac', ''), 
+                    d.get('vendor', ''), 
+                    d.get('is_iot', False), 
+                    d.get('os', ''), 
+                    cve_count,
+                    weak_creds,
+                    cred_details
+                ])
         logger.info("Wrote CSV output: %s", path)
     except Exception as e:
         logger.error("Failed to write CSV: %s", e)
+
+
+def perform_web_bruteforce(devices: List[Dict[str, Any]]) -> None:
+    """Perform web brute force on devices with open web ports."""
+    if not WEB_BRUTEFORCE_AVAILABLE:
+        logger.error("Web brute force module not available")
+        return
+    
+    web_devices = [d for d in devices if any(p in d.get('ports', []) for p in [80, 443, 8080, 8443, 8000, 8888, 9000])]
+    logger.debug("Web brute force candidates: %d devices (need web ports: 80,443,8080,8443,8000,8888,9000)", len(web_devices))
+    for d in devices:
+        web_ports = [p for p in d.get('ports', []) if p in [80, 443, 8080, 8443, 8000, 8888, 9000]]
+        logger.debug("  %s: web_ports=%s", d['ip'], web_ports)
+    if not web_devices:
+        logger.info("No devices with web ports found for brute force")
+        return
+    
+    logger.info(f"Starting web brute force on {len(web_devices)} devices")
+    
+    for i, dev in enumerate(web_devices, 1):
+        logger.info(f"Web brute force {dev['ip']} ({i}/{len(web_devices)})")
+        results = scan_web_ports(dev['ip'], dev.get('ports', []))
+        
+        found_creds = False
+        for port, creds in results.items():
+            if creds:
+                logger.warning(f"WEAK CREDENTIALS: {dev['ip']}:{port} - {creds[0]}:{creds[1]}")
+                found_creds = True
+        
+        if not found_creds and results:
+            logger.info(f"No weak credentials found on {dev['ip']}")
 
 
 def perform_cve_scanning(devices: List[Dict[str, Any]], no_interactive: bool = False) -> None:
@@ -407,6 +526,9 @@ def perform_cve_scanning(devices: List[Dict[str, Any]], no_interactive: bool = F
         logger.error("Nmap python bindings not available; cannot perform CVE scanning")
         return
     candidates = [d for d in devices if d.get('is_iot') and d.get('os_accuracy', 0) >= 80 and d.get('ports')]
+    logger.debug("CVE scan candidates: %d devices (need IoT=True, os_accuracy>=80, ports>0)", len(candidates))
+    for d in devices:
+        logger.debug("  %s: IoT=%s, os_accuracy=%d, ports=%d", d['ip'], d.get('is_iot'), d.get('os_accuracy', 0), len(d.get('ports', [])))
     if not candidates:
         logger.info("No suitable devices for CVE scanning (needs IoT + open ports + some OS accuracy)")
         return
@@ -426,12 +548,11 @@ def perform_cve_scanning(devices: List[Dict[str, Any]], no_interactive: bool = F
                 cves = v.get('cve', [])
                 if cves:
                     for cve in cves:
-                        # Try to get description from NVD data if available
                         desc = "No description available"
-                        if v.get('nvd'):
-                            nvd_entry = next((entry for entry in v['nvd'] if entry['cve'] == cve), None)
-                            if nvd_entry and nvd_entry.get('summary'):
-                                desc = nvd_entry['summary'][:100] + "..." if len(nvd_entry['summary']) > 100 else nvd_entry['summary']
+                        if v.get('cve_details'):
+                            cve_entry = next((entry for entry in v['cve_details'] if entry['cve'] == cve), None)
+                            if cve_entry and cve_entry.get('summary'):
+                                desc = cve_entry['summary'][:120] + "..." if len(cve_entry['summary']) > 120 else cve_entry['summary']
                         logger.info(" - %s: %s [%s] - %s", title, cve, severity, desc)
                 else:
                     logger.info(" - %s [%s]", title, severity)
@@ -443,7 +564,7 @@ def main():
     args = parse_args()
     setup_logging(args.debug)
     logger.info("Starting discovery for %s", args.ip_range)
-    logger.info("Manuf available: %s | Nmap available: %s | nvdlib available: %s", MANUF_AVAILABLE, NMAP_AVAILABLE, NVDLIB_AVAILABLE)
+    logger.info("Manuf available: %s | Nmap available: %s | requests available: %s | web_bruteforce available: %s", MANUF_AVAILABLE, NMAP_AVAILABLE, REQUESTS_AVAILABLE, WEB_BRUTEFORCE_AVAILABLE)
 
     if args.cve_only:
         ips = parse_ip_range(args.ip_range)
@@ -468,6 +589,10 @@ def main():
                 d = fut.result()
                 devices.append(d)
                 logger.info("Scanned %s: IoT=%s ports=%d", ip, d.get('is_iot'), len(d.get('ports', [])))
+                if args.debug:
+                    logger.debug("  OS: %s (accuracy: %d%%)", d.get('os', 'Unknown'), d.get('os_accuracy', 0))
+                    logger.debug("  Ports: %s", d.get('ports', []))
+                    logger.debug("  Vendor: %s", d.get('vendor', 'Unknown'))
             except Exception as e:
                 logger.error("scan failed for %s: %s", ip, e)
 
@@ -481,6 +606,10 @@ def main():
 
     # Auto-run CVE scanning on high confidence IoT devices if non-interactive
     perform_cve_scanning(devices, no_interactive=args.no_interactive)
+    
+    # Run web brute force if requested
+    if args.web_bruteforce and WEB_BRUTEFORCE_AVAILABLE:
+        perform_web_bruteforce(devices)
 
 
 if __name__ == '__main__':
