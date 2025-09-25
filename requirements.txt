@@ -1,2 +1,11 @@
-requests>=2.25.0
-python-nmap>=0.7.1
+# Core dependencies
+argparse
+requests
+
+# Optional dependencies (script works without them but with reduced features)
+python-nmap     # for scanning and CVE script execution
+manuf           # for MAC vendor lookups
+nvdlib          # for enriching CVE data from NVD
+
+# GUI dependencies
+tk # standard Tkinter bindings (usually bundled with Python)
