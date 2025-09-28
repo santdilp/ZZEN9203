@@ -5,6 +5,7 @@ Simple web login brute force module for common IoT device credentials.
 """
 
 import logging
+import os
 import time
 from typing import List, Dict, Optional, Tuple
 
@@ -23,21 +24,26 @@ if not logger.handlers:
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
 
-# Common IoT device credentials
-DEFAULT_CREDENTIALS = [
-    ("admin", "admin"),
-    ("admin", "password"),
-    ("admin", ""),
-    ("root", "root"),
-    ("root", "admin"),
-    ("root", ""),
-    ("user", "user"),
-    ("guest", "guest"),
-    ("admin", "12345"),
-    ("admin", "123456"),
-    ("ubnt", "ubnt"),  # Ubiquiti
-    ("pi", "raspberry"),  # Raspberry Pi
-]
+def load_credentials(dict_file: str = "dictionary.txt") -> List[Tuple[str, str]]:
+    """Load credentials from dictionary file."""
+    credentials = []
+    try:
+        with open(dict_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line and ':' in line:
+                    parts = line.split(':', 1)
+                    username = parts[0]
+                    password = parts[1] if len(parts) > 1 else ""
+                    credentials.append((username, password))
+        logger.debug(f"Loaded {len(credentials)} credentials from {dict_file}")
+    except FileNotFoundError:
+        logger.warning(f"Dictionary file {dict_file} not found, using fallback credentials")
+        credentials = [("admin", "admin"), ("root", "root"), ("admin", "password")]
+    except Exception as e:
+        logger.error(f"Error loading dictionary file: {e}")
+        credentials = [("admin", "admin"), ("root", "root")]
+    return credentials
 
 def try_web_login(ip: str, port: int, username: str, password: str, timeout: int = 5) -> bool:
     """Try to login to web interface with given credentials."""
@@ -102,7 +108,7 @@ def brute_force_web_login(ip: str, port: int, credentials: Optional[List[Tuple[s
         return None
     
     if credentials is None:
-        credentials = DEFAULT_CREDENTIALS
+        credentials = load_credentials()
     
     logger.info(f"Attempting web login brute force on {ip}:{port}")
     

@@ -1,0 +1,367 @@
+{
+  "summary": {
+    "total_devices": 15,
+    "iot_devices": 7,
+    "devices": [
+      {
+        "ip": "192.168.4.26",
+        "vendor": "Espressi",
+        "is_iot": false,
+        "ports": 0,
+        "os": "lwIP 1.4.0 or earlier"
+      },
+      {
+        "ip": "192.168.4.41",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.4.22",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.4.24",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": "2N Helios IP VoIP doorbell"
+      },
+      {
+        "ip": "192.168.4.33",
+        "vendor": "Chongqin",
+        "is_iot": true,
+        "ports": 5,
+        "os": "Brother or HP printer (VxWorks)"
+      },
+      {
+        "ip": "192.168.4.20",
+        "vendor": "eero",
+        "is_iot": false,
+        "ports": 2,
+        "os": "Linux 4.15 - 5.19"
+      },
+      {
+        "ip": "192.168.4.31",
+        "vendor": "AzureWav",
+        "is_iot": true,
+        "ports": 1,
+        "os": "OSRAM Lightify ZigBee gateway"
+      },
+      {
+        "ip": "192.168.4.128",
+        "vendor": "BSHHausg",
+        "is_iot": true,
+        "ports": 2,
+        "os": "Linux 4.15 - 5.19"
+      },
+      {
+        "ip": "192.168.4.1",
+        "vendor": "eero",
+        "is_iot": false,
+        "ports": 4,
+        "os": "Linux 4.15 - 5.19"
+      },
+      {
+        "ip": "192.168.4.37",
+        "vendor": "SonyHome",
+        "is_iot": true,
+        "ports": 6,
+        "os": "Android 9 - 10 (Linux 4.9 - 4.14)"
+      },
+      {
+        "ip": "192.168.4.34",
+        "vendor": "AmazonTe",
+        "is_iot": true,
+        "ports": 3,
+        "os": "Android 9 - 10 (Linux 4.9 - 4.14)"
+      },
+      {
+        "ip": "192.168.4.80",
+        "vendor": "ChengduM",
+        "is_iot": true,
+        "ports": 1,
+        "os": "Meross smart light bulb"
+      },
+      {
+        "ip": "192.168.4.232",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 1,
+        "os": "Android 9 - 10 (Linux 4.9 - 4.14)"
+      },
+      {
+        "ip": "192.168.4.137",
+        "vendor": "Espressi",
+        "is_iot": true,
+        "ports": 1,
+        "os": "OSRAM Lightify ZigBee gateway"
+      },
+      {
+        "ip": "192.168.4.23",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      }
+    ]
+  },
+  "devices": [
+    {
+      "ip": "192.168.4.26",
+      "mac": "7c:87:ce:b3:d4:6c",
+      "vendor": "Espressi",
+      "ports": [],
+      "services": {},
+      "os": "lwIP 1.4.0 or earlier",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.41",
+      "mac": "bc:10:2f:b8:13:a4",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.22",
+      "mac": "40:80:e1:61:e4:3b",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.24",
+      "mac": "a4:36:c7:3a:fc:b2",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "2N Helios IP VoIP doorbell",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.33",
+      "mac": "b0:68:e6:3c:c2:a0",
+      "vendor": "Chongqin",
+      "ports": [
+        80,
+        443,
+        515,
+        631,
+        9100
+      ],
+      "services": {
+        "80": "http Debut embedded httpd 1.30 Brother/HP printer http admin",
+        "443": "http Debut embedded httpd 1.30 Brother/HP printer http admin",
+        "515": "printer",
+        "631": "http Debut embedded httpd 1.30 Brother/HP printer http admin",
+        "9100": "jetdirect"
+      },
+      "os": "Brother or HP printer (VxWorks)",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.20",
+      "mac": "74:b6:b6:35:06:cd",
+      "vendor": "eero",
+      "ports": [
+        53,
+        3001
+      ],
+      "services": {
+        "53": "domain unknown banner: not currently available",
+        "3001": "nessus"
+      },
+      "os": "Linux 4.15 - 5.19",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.31",
+      "mac": "b4:8c:9d:72:f4:b5",
+      "vendor": "AzureWav",
+      "ports": [
+        80
+      ],
+      "services": {
+        "80": "tcpwrapped"
+      },
+      "os": "OSRAM Lightify ZigBee gateway",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.128",
+      "mac": "c8:d7:78:54:b1:d3",
+      "vendor": "BSHHausg",
+      "ports": [
+        22,
+        443
+      ],
+      "services": {
+        "22": "ssh OpenSSH 8.5 protocol 2.0",
+        "443": "https"
+      },
+      "os": "Linux 4.15 - 5.19",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.1",
+      "mac": "74:b6:b6:35:4b:6d",
+      "vendor": "eero",
+      "ports": [
+        53,
+        1900,
+        3001,
+        10001
+      ],
+      "services": {
+        "53": "domain unknown banner: not currently available",
+        "1900": "http Tornado httpd 6.1",
+        "3001": "nessus",
+        "10001": "scp-config"
+      },
+      "os": "Linux 4.15 - 5.19",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.37",
+      "mac": "94:db:56:3e:54:6c",
+      "vendor": "SonyHome",
+      "ports": [
+        80,
+        7000,
+        8008,
+        8009,
+        8443,
+        9000
+      ],
+      "services": {
+        "80": "http nginx",
+        "7000": "rtsp AirTunes rtspd 377.25.05",
+        "8008": "http",
+        "8009": "ajp13",
+        "8443": "https-alt",
+        "9000": "cslistener"
+      },
+      "os": "Android 9 - 10 (Linux 4.9 - 4.14)",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.34",
+      "mac": "f8:54:b8:99:18:2d",
+      "vendor": "AmazonTe",
+      "ports": [
+        1080,
+        8888,
+        9091
+      ],
+      "services": {
+        "1080": "socks5 No authentication; connection failed",
+        "8888": "tcpwrapped",
+        "9091": "xmltec-xmlmail"
+      },
+      "os": "Android 9 - 10 (Linux 4.9 - 4.14)",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.80",
+      "mac": "48:e1:e9:cd:46:f8",
+      "vendor": "ChengduM",
+      "ports": [
+        80
+      ],
+      "services": {
+        "80": "http"
+      },
+      "os": "Meross smart light bulb",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.232",
+      "mac": "40:80:e1:1a:c6:02",
+      "vendor": "Unknown",
+      "ports": [
+        8888
+      ],
+      "services": {
+        "8888": "sun-answerbook"
+      },
+      "os": "Android 9 - 10 (Linux 4.9 - 4.14)",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.137",
+      "mac": "84:0d:8e:9d:a5:a4",
+      "vendor": "Espressi",
+      "ports": [
+        6668
+      ],
+      "services": {
+        "6668": "irc"
+      },
+      "os": "OSRAM Lightify ZigBee gateway",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.4.23",
+      "mac": "90:48:6c:41:ed:82",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    }
+  ]
+}

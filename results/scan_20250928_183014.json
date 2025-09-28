@@ -1,0 +1,672 @@
+{
+  "summary": {
+    "total_devices": 25,
+    "iot_devices": 12,
+    "devices": [
+      {
+        "ip": "192.168.4.41",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.4.22",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.4.181",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 2,
+        "os": "Apple iOS 15.0 - 15.6 (Darwin 21.1.0 - 21.6.0)"
+      },
+      {
+        "ip": "192.168.4.33",
+        "vendor": "Chongqin",
+        "is_iot": true,
+        "ports": 5,
+        "os": "Brother or HP printer (VxWorks)"
+      },
+      {
+        "ip": "192.168.4.20",
+        "vendor": "eero",
+        "is_iot": false,
+        "ports": 2,
+        "os": "Linux 4.15 - 5.19"
+      },
+      {
+        "ip": "192.168.5.96",
+        "vendor": "Bluegiga",
+        "is_iot": false,
+        "ports": 0,
+        "os": "2N Helios IP VoIP doorbell"
+      },
+      {
+        "ip": "192.168.5.74",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.4.137",
+        "vendor": "Espressi",
+        "is_iot": false,
+        "ports": 1,
+        "os": "British Gas GS-Z3 data logger"
+      },
+      {
+        "ip": "192.168.5.153",
+        "vendor": "Ring",
+        "is_iot": true,
+        "ports": 0,
+        "os": "Meross smart light bulb"
+      },
+      {
+        "ip": "192.168.4.31",
+        "vendor": "AzureWav",
+        "is_iot": true,
+        "ports": 1,
+        "os": "OSRAM Lightify ZigBee gateway"
+      },
+      {
+        "ip": "192.168.5.157",
+        "vendor": "Ring",
+        "is_iot": true,
+        "ports": 0,
+        "os": "Meross smart light bulb"
+      },
+      {
+        "ip": "192.168.5.121",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 2,
+        "os": "Apple iOS 15.0 - 15.6 (Darwin 21.1.0 - 21.6.0)"
+      },
+      {
+        "ip": "192.168.6.18",
+        "vendor": "Unknown",
+        "is_iot": true,
+        "ports": 0,
+        "os": "Meross smart light bulb"
+      },
+      {
+        "ip": "192.168.5.174",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 3,
+        "os": "Microsoft Windows 10 1607 - 11 23H2"
+      },
+      {
+        "ip": "192.168.5.155",
+        "vendor": "eero",
+        "is_iot": false,
+        "ports": 2,
+        "os": "Linux 4.15 - 5.19"
+      },
+      {
+        "ip": "192.168.4.128",
+        "vendor": "BSHHausg",
+        "is_iot": true,
+        "ports": 2,
+        "os": "Linux 4.15 - 5.19"
+      },
+      {
+        "ip": "192.168.6.55",
+        "vendor": "Unknown",
+        "is_iot": true,
+        "ports": 2,
+        "os": "Linux 5.0 - 5.14"
+      },
+      {
+        "ip": "192.168.4.37",
+        "vendor": "SonyHome",
+        "is_iot": true,
+        "ports": 6,
+        "os": "Android 9 - 10 (Linux 4.9 - 4.14)"
+      },
+      {
+        "ip": "192.168.6.39",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.4.1",
+        "vendor": "eero",
+        "is_iot": false,
+        "ports": 4,
+        "os": "Linux 4.15 - 5.19"
+      },
+      {
+        "ip": "192.168.4.34",
+        "vendor": "AmazonTe",
+        "is_iot": true,
+        "ports": 3,
+        "os": "Android 9 - 10 (Linux 4.9 - 4.14)"
+      },
+      {
+        "ip": "192.168.4.80",
+        "vendor": "ChengduM",
+        "is_iot": true,
+        "ports": 1,
+        "os": "Meross smart light bulb"
+      },
+      {
+        "ip": "192.168.4.232",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 1,
+        "os": "Android 9 - 10 (Linux 4.9 - 4.14)"
+      },
+      {
+        "ip": "192.168.6.42",
+        "vendor": "Tp-LinkT",
+        "is_iot": true,
+        "ports": 4,
+        "os": "Linux 2.6.32 - 3.10"
+      },
+      {
+        "ip": "192.168.6.29",
+        "vendor": "Unknown",
+        "is_iot": true,
+        "ports": 1,
+        "os": "lwIP 1.4.0 or earlier"
+      }
+    ]
+  },
+  "devices": [
+    {
+      "ip": "192.168.4.41",
+      "mac": "bc:10:2f:b8:13:a4",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.22",
+      "mac": "40:80:e1:61:e4:3b",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.181",
+      "mac": "1e:44:a9:20:27:bf",
+      "vendor": "Unknown",
+      "ports": [
+        49152,
+        62078
+      ],
+      "services": {
+        "49152": "tcpwrapped",
+        "62078": "tcpwrapped"
+      },
+      "os": "Apple iOS 15.0 - 15.6 (Darwin 21.1.0 - 21.6.0)",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.33",
+      "mac": "b0:68:e6:3c:c2:a0",
+      "vendor": "Chongqin",
+      "ports": [
+        80,
+        443,
+        515,
+        631,
+        9100
+      ],
+      "services": {
+        "80": "http Debut embedded httpd 1.30 Brother/HP printer http admin",
+        "443": "http Debut embedded httpd 1.30 Brother/HP printer http admin",
+        "515": "printer",
+        "631": "http Debut embedded httpd 1.30 Brother/HP printer http admin",
+        "9100": "jetdirect"
+      },
+      "os": "Brother or HP printer (VxWorks)",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.20",
+      "mac": "74:b6:b6:35:06:cd",
+      "vendor": "eero",
+      "ports": [
+        53,
+        3001
+      ],
+      "services": {
+        "53": "domain unknown banner: not currently available",
+        "3001": "nessus"
+      },
+      "os": "Linux 4.15 - 5.19",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.5.96",
+      "mac": "88:6b:0f:a9:33:e3",
+      "vendor": "Bluegiga",
+      "ports": [],
+      "services": {},
+      "os": "2N Helios IP VoIP doorbell",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.5.74",
+      "mac": "ae:d4:15:04:43:fe",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.137",
+      "mac": "84:0d:8e:9d:a5:a4",
+      "vendor": "Espressi",
+      "ports": [
+        6668
+      ],
+      "services": {
+        "6668": "tcpwrapped"
+      },
+      "os": "British Gas GS-Z3 data logger",
+      "os_accuracy": 95,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.5.153",
+      "mac": "54:e0:19:b7:1b:19",
+      "vendor": "Ring",
+      "ports": [],
+      "services": {},
+      "os": "Meross smart light bulb",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.31",
+      "mac": "b4:8c:9d:72:f4:b5",
+      "vendor": "AzureWav",
+      "ports": [
+        80
+      ],
+      "services": {
+        "80": "tcpwrapped"
+      },
+      "os": "OSRAM Lightify ZigBee gateway",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.5.157",
+      "mac": "54:e0:19:bc:49:cb",
+      "vendor": "Ring",
+      "ports": [],
+      "services": {},
+      "os": "Meross smart light bulb",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.5.121",
+      "mac": "42:11:c2:db:6b:df",
+      "vendor": "Unknown",
+      "ports": [
+        49152,
+        62078
+      ],
+      "services": {
+        "49152": "tcpwrapped",
+        "62078": "tcpwrapped"
+      },
+      "os": "Apple iOS 15.0 - 15.6 (Darwin 21.1.0 - 21.6.0)",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.6.18",
+      "mac": "cc:3b:fb:8e:e6:c3",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "Meross smart light bulb",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.5.174",
+      "mac": null,
+      "vendor": "Unknown",
+      "ports": [
+        135,
+        139,
+        445
+      ],
+      "services": {
+        "135": "msrpc Microsoft Windows RPC",
+        "139": "netbios-ssn Microsoft Windows netbios-ssn",
+        "445": "microsoft-ds"
+      },
+      "os": "Microsoft Windows 10 1607 - 11 23H2",
+      "os_accuracy": 99,
+      "hostname": "host.docker.internal",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.5.155",
+      "mac": "74:b6:b6:34:ae:6d",
+      "vendor": "eero",
+      "ports": [
+        53,
+        3001
+      ],
+      "services": {
+        "53": "domain unknown banner: not currently available",
+        "3001": "nessus"
+      },
+      "os": "Linux 4.15 - 5.19",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.128",
+      "mac": "c8:d7:78:54:b1:d3",
+      "vendor": "BSHHausg",
+      "ports": [
+        22,
+        443
+      ],
+      "services": {
+        "22": "ssh OpenSSH 8.5 protocol 2.0",
+        "443": "https"
+      },
+      "os": "Linux 4.15 - 5.19",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.6.55",
+      "mac": "98:a1:4a:bc:5e:73",
+      "vendor": "Unknown",
+      "ports": [
+        80,
+        443
+      ],
+      "services": {
+        "80": "http Golang net/http server",
+        "443": "http Golang net/http server Go-IPFS json-rpc or InfluxDB API"
+      },
+      "os": "Linux 5.0 - 5.14",
+      "os_accuracy": 98,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.37",
+      "mac": "94:db:56:3e:54:6c",
+      "vendor": "SonyHome",
+      "ports": [
+        80,
+        7000,
+        8008,
+        8009,
+        8443,
+        9000
+      ],
+      "services": {
+        "80": "http nginx",
+        "7000": "rtsp AirTunes rtspd 377.25.05",
+        "8008": "http",
+        "8009": "ajp13",
+        "8443": "https-alt",
+        "9000": "cslistener"
+      },
+      "os": "Android 9 - 10 (Linux 4.9 - 4.14)",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.6.39",
+      "mac": "90:48:6c:bd:c7:af",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.1",
+      "mac": "74:b6:b6:35:4b:6d",
+      "vendor": "eero",
+      "ports": [
+        53,
+        1900,
+        3001,
+        10001
+      ],
+      "services": {
+        "53": "domain unknown banner: not currently available",
+        "1900": "http Tornado httpd 6.1",
+        "3001": "nessus",
+        "10001": "scp-config"
+      },
+      "os": "Linux 4.15 - 5.19",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.34",
+      "mac": "f8:54:b8:99:18:2d",
+      "vendor": "AmazonTe",
+      "ports": [
+        1080,
+        8888,
+        9091
+      ],
+      "services": {
+        "1080": "socks5 No authentication; connection failed",
+        "8888": "tcpwrapped",
+        "9091": "xmltec-xmlmail"
+      },
+      "os": "Android 9 - 10 (Linux 4.9 - 4.14)",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.80",
+      "mac": "48:e1:e9:cd:46:f8",
+      "vendor": "ChengduM",
+      "ports": [
+        80
+      ],
+      "services": {
+        "80": "http"
+      },
+      "os": "Meross smart light bulb",
+      "os_accuracy": 98,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.4.232",
+      "mac": "40:80:e1:1a:c6:02",
+      "vendor": "Unknown",
+      "ports": [
+        8888
+      ],
+      "services": {
+        "8888": "sun-answerbook"
+      },
+      "os": "Android 9 - 10 (Linux 4.9 - 4.14)",
+      "os_accuracy": 96,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null,
+      "vulnerabilities": []
+    },
+    {
+      "ip": "192.168.6.42",
+      "mac": "28:ee:52:93:b1:3b",
+      "vendor": "Tp-LinkT",
+      "ports": [
+        443,
+        554,
+        2020,
+        8800
+      ],
+      "services": {
+        "443": "nagios-nsca Nagios NSCA",
+        "554": "rtsp DoorBird video doorbell rtspd",
+        "2020": "soap gSOAP 2.8",
+        "8800": "sunwebadmin"
+      },
+      "os": "Linux 2.6.32 - 3.10",
+      "os_accuracy": 98,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": [
+        {
+          "title": "Vulners",
+          "port": 2020,
+          "cve": [
+            "CVE-2017-9765",
+            "CVE-2019-6973",
+            "CVE-2019-7659",
+            "CVE-2020-13574",
+            "CVE-2020-13575",
+            "CVE-2020-13576",
+            "CVE-2020-13577",
+            "CVE-2020-13578",
+            "CVE-2021-21783"
+          ],
+          "severity": "Medium",
+          "description": "cpe:/a:genivia:gsoap:2.8: CVE-2021-21783 9.8 https://vulners.com/cve/CVE-2021-21783 CVE-2020-13576 9.8 https://vulners.com/cve/CVE-2020-13576 CVE-2019-7659 8.1 https://vulners.com/cve/CVE-2019-7659 CVE-2017-9765 8.1 https://vulners.com/cve/CVE-2017-9765 EDB-ID:46261 7.5 https://vulners.com/exploitdb/EDB-ID:46261 *EXPLOIT* CVE-2020-13578 7.5 https://vulners.com/cve/CVE-2020-13578 CVE-2020-13577 7.5 https://vulners.com/cve/CVE-2020-13577 CVE-2020-13575 7.5 https://vulners.com/cve/CVE-2020-13575 CVE-2020-13574 7.5 https://vulners.com/cve/CVE-2020-13574 CVE-2019-6973 7.5 https://vulners.com/cve/CVE-2019-6973 1337DAY-ID-32069 7.5 https://vulners.com/zdt/1337DAY-ID-32069 *EXPLOIT* SSV:96284 6.8 https://vulners.com/seebug/SSV:96284 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 https:",
+          "cve_descriptions": {
+            "CVE-2017-9765": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2019-6973": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2019-7659": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2020-13574": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2020-13575": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2020-13576": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2020-13577": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2020-13578": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*",
+            "CVE-2021-21783": "EDB-ID:46261 7.5 *EXPLOIT* 1337DAY-ID-32069 7.5 *EXPLOIT* SSV:96284 6.8 *EXPLOIT* EXPLOITPACK:B1192DA39B4D67FD7ABC8D40101C92BE 5.0 *EXPLOIT* PACKETSTORM:151377 0.0 *EXPLOIT*"
+          },
+          "script": "vulners",
+          "cve_details": [
+            {
+              "cve": "CVE-2017-9765",
+              "summary": "Integer overflow in the soap_get function in Genivia gSOAP 2.7.x and 2.8.x before 2.8.48, as used on Axis cameras and other devices, allows remote attackers to execute arbitrary code or cause a denial of service (stack-based buffer overflow and application crash) via a large XML document, aka Devil's Ivy. NOTE: the large document would be blocked by many common web-server configurations on general-purpose computers."
+            },
+            {
+              "cve": "CVE-2019-6973",
+              "summary": "Sricam IP CCTV cameras are vulnerable to denial of service via multiple incomplete HTTP requests because the web server (based on gSOAP 2.8.x) is configured for an iterative queueing approach (aka non-threaded operation) with a timeout of several seconds."
+            },
+            {
+              "cve": "CVE-2019-7659",
+              "summary": "Genivia gSOAP 2.7.x and 2.8.x before 2.8.75 allows attackers to cause a denial of service (application abort) or possibly have unspecified other impact if a server application is built with the -DWITH_COOKIES flag. This affects the C/C++ libgsoapck/libgsoapck++ and libgsoapssl/libgsoapssl++ libraries, as these are built with that flag."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "ip": "192.168.6.29",
+      "mac": "c4:e7:ae:07:d8:ee",
+      "vendor": "Unknown",
+      "ports": [
+        80
+      ],
+      "services": {
+        "80": "http"
+      },
+      "os": "lwIP 1.4.0 or earlier",
+      "os_accuracy": 99,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null,
+      "vulnerabilities": []
+    }
+  ]
+}

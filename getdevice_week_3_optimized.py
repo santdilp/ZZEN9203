@@ -26,6 +26,7 @@ import subprocess
 import sys
 import time
 import xml.etree.ElementTree as ET
+from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 # Optional dependencies
@@ -74,8 +75,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     parser.add_argument("--cve-only", action="store_true", help="Skip discovery and run CVE scan on provided IPs")
     parser.add_argument("--no-interactive", action="store_true", help="Non-interactive (auto select all detected devices for CVE scan)")
-    parser.add_argument("--output-json", help="Write full results to JSON file")
-    parser.add_argument("--output-csv", help="Write summary to CSV file")
+    parser.add_argument("--output-csv", action="store_true", help="Also write summary to CSV file")
     parser.add_argument("--web-bruteforce", action="store_true", help="Enable web login brute force on detected web ports")
     return parser.parse_args()
 
@@ -417,7 +417,7 @@ def is_likely_iot(vendor: str, ports: List[int], services: Dict[int, str], os_in
 # High-level device scan
 
 def scan_device(ip: str) -> Dict[str, Any]:
-    dev = {'ip': ip, 'mac': None, 'vendor': 'Unknown', 'ports': [], 'services': {}, 'os': '', 'os_accuracy': 0, 'hostname': '', 'is_iot': False, 'upnp': None}
+    dev = {'ip': ip, 'mac': None, 'vendor': 'Unknown', 'ports': [], 'services': {}, 'os': '', 'os_accuracy': 0, 'hostname': '', 'is_iot': False, 'upnp': None, 'vulnerabilities': []}
     mac = get_mac_from_arp(ip)
     if mac:
         dev['mac'] = mac
@@ -541,6 +541,7 @@ def perform_cve_scanning(devices: List[Dict[str, Any]], no_interactive: bool = F
         logger.info("CVE scanning %s (%d/%d)", dev['ip'], i, len(selected))
         vulns = nmap_cve_scan(dev['ip'])
         if vulns:
+            dev['vulnerabilities'] = vulns  # Store vulnerabilities in device object
             logger.warning("Vulnerabilities found for %s: %d", dev['ip'], len(vulns))
             for v in vulns:
                 title = v.get('title', 'Unknown')
@@ -563,21 +564,33 @@ def perform_cve_scanning(devices: List[Dict[str, Any]], no_interactive: bool = F
 def main():
     args = parse_args()
     setup_logging(args.debug)
+    
     logger.info("Starting discovery for %s", args.ip_range)
     logger.info("Manuf available: %s | Nmap available: %s | requests available: %s | web_bruteforce available: %s", MANUF_AVAILABLE, NMAP_AVAILABLE, REQUESTS_AVAILABLE, WEB_BRUTEFORCE_AVAILABLE)
 
+    # Create results directory if it doesn't exist
+    os.makedirs('results', exist_ok=True)
+    
+    # Generate timestamped filename
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    json_path = f"results/scan_{timestamp}.json"
+    
     if args.cve_only:
         ips = parse_ip_range(args.ip_range)
         if not ips:
             logger.error("Invalid IPs for cve-only mode")
             sys.exit(1)
-        devices = [{'ip': ip, 'vendor': 'Unknown', 'os': 'Unknown', 'os_accuracy': 100, 'ports': [80,443,22], 'is_iot': True} for ip in ips[:10]]
+        devices = [{'ip': ip, 'vendor': 'Unknown', 'os': 'Unknown', 'os_accuracy': 100, 'ports': [80,443,22], 'is_iot': True, 'vulnerabilities': []} for ip in ips[:10]]
         perform_cve_scanning(devices, no_interactive=args.no_interactive)
+        # Always write JSON output (after CVE scanning)
+        write_json(json_path, {'summary': {'total_devices': len(devices), 'iot_devices': len(devices)}, 'devices': devices})
         return
 
     active = ping_sweep(args.ip_range)
     if not active:
         logger.info("No active hosts discovered")
+        # Write empty results
+        write_json(json_path, {'summary': {'total_devices': 0, 'iot_devices': 0}, 'devices': []})
         return
 
     devices: List[Dict[str, Any]] = []
@@ -599,13 +612,16 @@ def main():
     summary = summarize_devices(devices)
     logger.info("Discovery complete: %d devices (%d IoT)", summary['total_devices'], summary['iot_devices'])
 
-    if args.output_json:
-        write_json(args.output_json, {'summary': summary, 'devices': devices})
-    if args.output_csv:
-        write_csv(args.output_csv, devices)
-
     # Auto-run CVE scanning on high confidence IoT devices if non-interactive
     perform_cve_scanning(devices, no_interactive=args.no_interactive)
+    
+    # Always write JSON output (after CVE scanning)
+    write_json(json_path, {'summary': summary, 'devices': devices})
+    
+    # Optional CSV output
+    if args.output_csv:
+        csv_path = f"results/scan_{timestamp}.csv"
+        write_csv(csv_path, devices)
     
     # Run web brute force if requested
     if args.web_bruteforce and WEB_BRUTEFORCE_AVAILABLE:

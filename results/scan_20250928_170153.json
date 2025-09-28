@@ -1,0 +1,144 @@
+{
+  "summary": {
+    "total_devices": 6,
+    "iot_devices": 4,
+    "devices": [
+      {
+        "ip": "192.168.6.26",
+        "vendor": "PcsCompu",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.6.18",
+        "vendor": "Unknown",
+        "is_iot": true,
+        "ports": 0,
+        "os": "Meross smart light bulb"
+      },
+      {
+        "ip": "192.168.6.39",
+        "vendor": "Unknown",
+        "is_iot": false,
+        "ports": 0,
+        "os": ""
+      },
+      {
+        "ip": "192.168.6.55",
+        "vendor": "Unknown",
+        "is_iot": true,
+        "ports": 2,
+        "os": "Linux 5.0 - 5.14"
+      },
+      {
+        "ip": "192.168.6.42",
+        "vendor": "Tp-LinkT",
+        "is_iot": true,
+        "ports": 4,
+        "os": "Linux 2.6.32 - 3.10"
+      },
+      {
+        "ip": "192.168.6.29",
+        "vendor": "Unknown",
+        "is_iot": true,
+        "ports": 1,
+        "os": "lwIP 1.4.0 or earlier"
+      }
+    ]
+  },
+  "devices": [
+    {
+      "ip": "192.168.6.26",
+      "mac": "08:00:27:b4:a1:05",
+      "vendor": "PcsCompu",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.6.18",
+      "mac": "cc:3b:fb:8e:e6:c3",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "Meross smart light bulb",
+      "os_accuracy": 100,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.6.39",
+      "mac": "90:48:6c:bd:c7:af",
+      "vendor": "Unknown",
+      "ports": [],
+      "services": {},
+      "os": "",
+      "os_accuracy": 0,
+      "hostname": "",
+      "is_iot": false,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.6.55",
+      "mac": "98:a1:4a:bc:5e:73",
+      "vendor": "Unknown",
+      "ports": [
+        80,
+        443
+      ],
+      "services": {
+        "80": "http Golang net/http server",
+        "443": "http Golang net/http server Go-IPFS json-rpc or InfluxDB API"
+      },
+      "os": "Linux 5.0 - 5.14",
+      "os_accuracy": 98,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.6.42",
+      "mac": "28:ee:52:93:b1:3b",
+      "vendor": "Tp-LinkT",
+      "ports": [
+        443,
+        554,
+        2020,
+        8800
+      ],
+      "services": {
+        "443": "nagios-nsca Nagios NSCA",
+        "554": "rtsp DoorBird video doorbell rtspd",
+        "2020": "soap gSOAP 2.8",
+        "8800": "sunwebadmin"
+      },
+      "os": "Linux 2.6.32 - 3.10",
+      "os_accuracy": 98,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    },
+    {
+      "ip": "192.168.6.29",
+      "mac": "c4:e7:ae:07:d8:ee",
+      "vendor": "Unknown",
+      "ports": [
+        80
+      ],
+      "services": {
+        "80": "http"
+      },
+      "os": "lwIP 1.4.0 or earlier",
+      "os_accuracy": 99,
+      "hostname": "",
+      "is_iot": true,
+      "upnp": null
+    }
+  ]
+}
